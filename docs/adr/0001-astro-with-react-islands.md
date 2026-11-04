@@ -1,0 +1,3 @@
+# Astro with React islands for the site framework
+
+We use Astro (with the React and MDX integrations) rather than a React-first framework like Next.js, React Router v7, or Vike, even though React is the preferred UI library. The site is content-first: Essays are Markdown, Topics are a curated list, and most pages need no client-side JavaScript. Astro gives us content collections, schema-checked frontmatter, and static output out of the box, while still letting us write React for Slides and anything interactive as islands. The cost is that page shells and layouts are `.astro` files, not React components.
