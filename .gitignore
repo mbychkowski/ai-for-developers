@@ -23,8 +23,5 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# graphify (machine-local state)
-graphify-out/cache/
-graphify-out/.graphify_python
-graphify-out/.graphify_root
-graphify-out/cost.json
+# graphify knowledge graph (rebuilt locally by git hooks; never committed)
+graphify-out/
