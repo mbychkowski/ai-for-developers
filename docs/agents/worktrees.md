@@ -33,9 +33,28 @@ git branch -d issue-02/essay-tracer
 git fetch --prune
 ```
 
+## Chores
+
+Work that isn't a ticket (tooling, CI, docs, agent-environment fixes, retro follow-ups) is a **chore**. Chores follow the same protocol, without an issue number:
+
+| Thing | Convention | Example |
+|---|---|---|
+| Worktree directory | `../ai-for-developers.worktrees/chore-<kebab-description>` | `../ai-for-developers.worktrees/chore-retro-guardrails` |
+| Branch | `chore/<kebab-description>` (2–4 words) | `chore/retro-guardrails` |
+| PR title | `chore: <summary>` | `chore: ignore graphify-out, add CI checks` |
+| PR body | What changed and why; `Closes #N` only if an issue exists | |
+
+```bash
+git fetch origin
+git worktree add ../ai-for-developers.worktrees/chore-retro-guardrails -b chore/retro-guardrails origin/main
+# ...commit, push, gh pr create, merge...
+git worktree remove ../ai-for-developers.worktrees/chore-retro-guardrails
+git branch -d chore/retro-guardrails
+```
+
 ## Rules
 
-- Never implement an issue directly on `main` or in the primary checkout.
+- Never implement an issue or chore directly on `main` or in the primary checkout. `main` is branch-protected: changes land only via PR.
 - Blocked issues (see native "blocked by" links) start only after their blockers are merged; branch from the updated `origin/main`.
 - Unblocked siblings (e.g. #3, #4, #5 after #2) may run in parallel worktrees.
 - Dev servers in parallel worktrees need distinct ports: `astro dev --background --port 43NN`.

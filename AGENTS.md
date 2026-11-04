@@ -10,7 +10,11 @@ Single-context: one root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md
 
 ### Worktrees
 
-Every issue is worked in its own git worktree at `../ai-for-developers.worktrees/issue-NN` on branch `issue-NN/<short-description>`, merged via a PR containing `Closes #N`. See `docs/agents/worktrees.md`.
+Every issue is worked in its own git worktree at `../ai-for-developers.worktrees/issue-NN` on branch `issue-NN/<short-description>`, merged via a PR containing `Closes #N`. Chores (non-ticket work: tooling, CI, docs) use `chore-<desc>` / `chore/<desc>` with the same protocol. `main` is protected; never commit to it directly. See `docs/agents/worktrees.md`.
+
+### Dev environment
+
+Known setup fixes (pnpm via corepack, Playwright browsers path, TypeScript ^6): see `docs/agents/dev-environment.md`.
 
 ## Development
 
