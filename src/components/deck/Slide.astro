@@ -1,0 +1,20 @@
+---
+/**
+ * One Slide in a Deck: a fixed 1280×720 canvas, scaled by <DeckPlayer>.
+ * Available in every Deck's MDX without an import.
+ */
+interface Props {
+  /** `default` | `title` (Deck opener) | `section` (chapter divider) | `statement` (one big idea) */
+  layout?: 'default' | 'title' | 'section' | 'statement';
+  /** Extra classes for the canvas, e.g. Tailwind utilities for a one-off tweak. */
+  class?: string;
+}
+
+const { layout = 'default', class: className } = Astro.props;
+---
+
+<section class="slide-frame" data-slide>
+  <div class:list={['slide-canvas', className]} data-layout={layout}>
+    <slot />
+  </div>
+</section>

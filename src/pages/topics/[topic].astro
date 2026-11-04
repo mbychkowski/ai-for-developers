@@ -1,0 +1,42 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DeckCard from '../../components/DeckCard.astro';
+import EssayItem from '../../components/EssayItem.astro';
+import { getDecks, getEssays, getTopics } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const topics = await getTopics();
+  return topics.map((topic) => ({ params: { topic: topic.id }, props: { topic } }));
+}
+
+const { topic } = Astro.props;
+const has = (refs: { id: string }[]) => refs.some((r) => r.id === topic.id);
+const decks = (await getDecks()).filter((d) => has(d.data.topics));
+const essays = (await getEssays()).filter((e) => has(e.data.topics));
+---
+
+<Layout title={topic.data.name} description={topic.data.description}>
+  <header class="mb-14 max-w-3xl">
+    <p class="mb-3 text-sm font-semibold tracking-widest text-accent uppercase">Topic</p>
+    <h1 class="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">{topic.data.name}</h1>
+    <p class="mt-4 text-xl text-muted">{topic.data.description}</p>
+  </header>
+
+  {
+    decks.length > 0 && (
+      <section class="mb-16" aria-labelledby="decks">
+        <h2 id="decks" class="mb-6 text-sm font-semibold tracking-widest text-muted uppercase">Decks</h2>
+        <div class="grid gap-6 sm:grid-cols-2">
+          {decks.map((deck) => (
+            <DeckCard deck={deck} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section aria-labelledby="essays">
+    <h2 id="essays" class="mb-2 text-sm font-semibold tracking-widest text-muted uppercase">Essays</h2>
+    {essays.length === 0 ? <p class="text-muted">No Essays on this Topic yet.</p> : essays.map((essay) => <EssayItem essay={essay} />)}
+  </section>
+</Layout>

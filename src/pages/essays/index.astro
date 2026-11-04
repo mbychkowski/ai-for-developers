@@ -1,0 +1,21 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TopicFilter, { type FilterEssay } from '../../components/TopicFilter.tsx';
+import { essayUrl, formatDate, getEssays, getTopics } from '../../lib/site';
+
+const essays: FilterEssay[] = (await getEssays()).map((e) => ({
+  id: e.id,
+  href: essayUrl(e.id),
+  title: e.data.draft ? `${e.data.title} (draft)` : e.data.title,
+  description: e.data.description,
+  date: e.data.published.toISOString(),
+  dateLabel: formatDate(e.data.published),
+  topics: e.data.topics.map((t) => t.id),
+}));
+const topics = (await getTopics()).map((t) => ({ id: t.id, name: t.data.name }));
+---
+
+<Layout title="Essays" description="All Essays, newest first, filterable by Topic.">
+  <h1 class="mb-8 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Essays</h1>
+  <TopicFilter client:load essays={essays} topics={topics} />
+</Layout>

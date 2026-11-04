@@ -1,0 +1,59 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DeckCard from '../components/DeckCard.astro';
+import EssayItem from '../components/EssayItem.astro';
+import { SITE_DESCRIPTION, SITE_TITLE, getDecks, getEssays, getTopics, topicUrl, url } from '../lib/site';
+
+const decks = await getDecks();
+const essays = (await getEssays()).slice(0, 5);
+const topics = await getTopics();
+---
+
+<Layout>
+  <section class="mb-16 max-w-3xl">
+    <h1 class="font-display text-5xl leading-[1.05] font-extrabold tracking-tight sm:text-6xl">{SITE_TITLE}</h1>
+    <p class="mt-5 text-xl text-muted">{SITE_DESCRIPTION}</p>
+  </section>
+
+  <section class="mb-20" aria-labelledby="decks">
+    <h2 id="decks" class="mb-6 text-sm font-semibold tracking-widest text-muted uppercase">Decks</h2>
+    {
+      decks.length === 0 ? (
+        <p class="text-muted">No Decks yet.</p>
+      ) : (
+        <div class="grid gap-6 sm:grid-cols-2">
+          {decks.map((deck) => (
+            <DeckCard deck={deck} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+
+  <section class="mb-20" aria-labelledby="essays">
+    <div class="mb-2 flex items-baseline justify-between">
+      <h2 id="essays" class="text-sm font-semibold tracking-widest text-muted uppercase">Recent Essays</h2>
+      <a href={url('/essays/')} class="text-sm font-medium text-accent hover:underline">All Essays →</a>
+    </div>
+    {essays.length === 0 ? <p class="text-muted">No Essays yet.</p> : essays.map((essay) => <EssayItem essay={essay} />)}
+  </section>
+
+  <section aria-labelledby="topics">
+    <h2 id="topics" class="mb-6 text-sm font-semibold tracking-widest text-muted uppercase">Topics</h2>
+    <ul class="grid gap-4 sm:grid-cols-3">
+      {
+        topics.map((t) => (
+          <li>
+            <a
+              href={topicUrl(t.id)}
+              class="block h-full rounded-xl border border-line bg-white/60 p-5 transition hover:border-accent"
+            >
+              <span class="font-display font-bold">{t.data.name}</span>
+              <span class="mt-1 block text-sm text-muted">{t.data.description}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Layout>

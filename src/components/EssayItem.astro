@@ -1,0 +1,25 @@
+---
+import { getEntries, type CollectionEntry } from 'astro:content';
+import TopicChips from './TopicChips.astro';
+import { essayUrl, formatDate } from '../lib/site';
+
+interface Props {
+  essay: CollectionEntry<'essays'>;
+}
+const { essay } = Astro.props;
+const topics = await getEntries(essay.data.topics);
+---
+
+<article class="group grid gap-2 border-t border-line py-6 sm:grid-cols-[8rem_1fr] sm:gap-6">
+  <time datetime={essay.data.published.toISOString()} class="pt-1 text-sm text-muted tabular-nums">
+    {formatDate(essay.data.published)}
+  </time>
+  <div class="flex flex-col gap-2">
+    <h3 class="font-display text-xl font-bold tracking-tight">
+      <a href={essayUrl(essay.id)} class="transition group-hover:text-accent">{essay.data.title}</a>
+      {essay.data.draft && <span class="ml-2 rounded bg-amber-300 px-1.5 py-0.5 align-middle text-xs font-bold">Draft</span>}
+    </h3>
+    <p class="text-muted">{essay.data.description}</p>
+    <TopicChips topics={topics} />
+  </div>
+</article>

@@ -1,0 +1,59 @@
+---
+import '../../styles/global.css';
+import { getEntries, render } from 'astro:content';
+import DeckPlayer from '../../components/deck/DeckPlayer.tsx';
+import Slide from '../../components/deck/Slide.astro';
+import Callout from '../../components/deck/Callout.astro';
+import TwoColumn from '../../components/deck/TwoColumn.astro';
+import { SITE_TITLE, formatDate, getDecks, topicUrl, url } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const decks = await getDecks();
+  return decks.map((deck) => ({ params: { deck: deck.id }, props: { deck } }));
+}
+
+const { deck } = Astro.props;
+const { Content } = await render(deck);
+const topics = await getEntries(deck.data.topics);
+const fullTitle = `${deck.data.title} · ${SITE_TITLE}`;
+
+/** Components every Deck can use in its MDX without importing them. */
+const components = { Slide, Callout, TwoColumn };
+---
+
+<!doctype html>
+<html lang="en" class="bg-stage">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={deck.data.description} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={deck.data.description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  </head>
+  <body class="deck-body flex flex-col bg-stage text-white">
+    <header class="flex items-center gap-4 px-4 pt-4 text-sm sm:px-8 sm:pt-5">
+      <a href={url('/')} class="text-white/60 transition hover:text-white" aria-label="Back to home">←</a>
+      <h1 class="truncate font-semibold">{deck.data.title}</h1>
+      <div class="ml-auto hidden items-center gap-3 text-white/50 md:flex">
+        {
+          topics.map((t) => (
+            <a href={topicUrl(t.id)} class="transition hover:text-white">
+              {t.data.name}
+            </a>
+          ))
+        }
+        <span aria-hidden="true">·</span>
+        <span>Updated {formatDate(deck.data.updated)}</span>
+      </div>
+    </header>
+
+    <main class="flex min-h-0 flex-1 flex-col">
+      <DeckPlayer client:load title={deck.data.title}>
+        <Content components={components} />
+      </DeckPlayer>
+    </main>
+  </body>
+</html>

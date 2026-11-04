@@ -1,0 +1,60 @@
+---
+import '../styles/global.css';
+import { SITE_DESCRIPTION, SITE_TITLE, url } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = SITE_DESCRIPTION } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
+const path = Astro.url.pathname;
+const nav = [{ href: url('/essays/'), label: 'Essays' }];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <header class="border-b border-line/70">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+        <a href={url('/')} class="flex items-center gap-2.5 font-display text-lg font-extrabold tracking-tight">
+          <span class="grid size-7 place-items-center rounded-lg bg-ink text-xs text-paper">AI</span>
+          {SITE_TITLE}
+        </a>
+        <nav class="flex gap-6 text-sm font-medium">
+          {
+            nav.map((item) => (
+              <a
+                href={item.href}
+                class:list={['transition hover:text-accent', path.startsWith(item.href) ? 'text-accent' : 'text-muted']}
+              >
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </header>
+
+    <main class="mx-auto w-full max-w-5xl flex-1 px-6 py-12 sm:py-16">
+      <slot />
+    </main>
+
+    <footer class="border-t border-line/70">
+      <div class="mx-auto max-w-5xl px-6 py-8 text-sm text-muted">
+        {SITE_TITLE}: {SITE_DESCRIPTION}
+      </div>
+    </footer>
+  </body>
+</html>

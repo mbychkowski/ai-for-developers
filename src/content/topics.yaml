@@ -1,0 +1,14 @@
+# The curated Topic list. Every Deck and Essay references one or more of these ids.
+# Adding a Topic = adding an entry here. Unknown ids in frontmatter fail the build.
+
+- id: agentic-engineering
+  name: Agentic Engineering
+  description: Designing, building, and operating software with AI agents in the loop.
+
+- id: software-factory
+  name: Software Factory
+  description: Turning AI-assisted development into a repeatable, scalable delivery system.
+
+- id: ai-developer-governance
+  name: AI Developer Governance
+  description: Policies, guardrails, and accountability for AI in the development lifecycle.
