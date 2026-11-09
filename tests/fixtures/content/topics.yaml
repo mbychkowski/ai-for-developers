@@ -4,3 +4,6 @@ testing:
 agentic-engineering:
   name: Agentic Engineering
   description: Principles and patterns for building software with autonomous AI agents.
+design:
+  name: Design
+  description: Systems and interface design for human and agent developers.

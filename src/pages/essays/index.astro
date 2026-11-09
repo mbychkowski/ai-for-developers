@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EssayItem from '../../components/EssayItem.astro';
+import { getEssays } from '../../lib/site';
+
+const essays = await getEssays();
+---
+
+<Layout title="Essays" description="All Essays, newest first.">
+  <h1 class="mb-8 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Essays</h1>
+  {essays.length === 0 ? <p class="text-muted">No Essays yet.</p> : essays.map((essay) => <EssayItem essay={essay} />)}
+</Layout>

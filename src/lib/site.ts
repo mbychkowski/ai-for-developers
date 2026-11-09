@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 export const SITE_TITLE = 'AI for Developers';
@@ -23,6 +24,31 @@ const isVisible = ({ data }: { data: { draft?: boolean } }) => import.meta.env.D
 export async function getEssays(): Promise<CollectionEntry<'essays'>[]> {
   const essays = await getCollection('essays', isVisible);
   return essays.sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+}
+
+/**
+ * Topics in the order they appear in topics.yaml.
+ * Astro's content layer stores entries in SQLite, which defaults to primary key (id)
+ * ordering. We scan the top-level keys in topics.yaml to preserve the curated list order.
+ */
+export async function getTopics(): Promise<CollectionEntry<'topics'>[]> {
+  const topics = await getCollection('topics');
+  const contentDir = process.env.CONTENT_DIR || 'src/content';
+  const yamlPath = `${contentDir}/topics.yaml`;
+  try {
+    const raw = fs.readFileSync(yamlPath, 'utf8');
+    const order: string[] = [];
+    for (const line of raw.split('\n')) {
+      const match = line.match(/^([a-z0-9-]+):/);
+      if (match && match[1] !== 'id') {
+        order.push(match[1]);
+      }
+    }
+    const orderMap = new Map(order.map((id, index) => [id, index]));
+    return topics.sort((a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0));
+  } catch {
+    return topics;
+  }
 }
 
 export function formatDate(date: Date): string {

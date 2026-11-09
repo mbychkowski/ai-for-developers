@@ -9,7 +9,7 @@ interface Props {
 const { title, description = SITE_DESCRIPTION } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
 const path = Astro.url.pathname;
-const nav: { href: string; label: string }[] = [];
+const nav = [{ href: url('/essays/'), label: 'Essays' }];
 ---
 
 <!doctype html>

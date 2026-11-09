@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EssayItem from '../../components/EssayItem.astro';
+import { getEssays, getTopics } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const topics = await getTopics();
+  return topics.map((topic) => ({ params: { topic: topic.id }, props: { topic } }));
+}
+
+const { topic } = Astro.props;
+const hasTopic = (refs: { id: string }[]) => refs.some((r) => r.id === topic.id);
+const essays = (await getEssays()).filter((e) => hasTopic(e.data.topics));
+---
+
+<Layout title={topic.data.name} description={topic.data.description}>
+  <header class="mb-14 max-w-3xl">
+    <p class="mb-3 text-sm font-semibold tracking-widest text-accent uppercase">Topic</p>
+    <h1 class="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">{topic.data.name}</h1>
+    <p class="mt-4 text-xl text-muted">{topic.data.description}</p>
+  </header>
+
+  <section aria-labelledby="essays">
+    <h2 id="essays" class="mb-2 text-sm font-semibold tracking-widest text-muted uppercase">Essays</h2>
+    {essays.length === 0 ? <p class="text-muted">No Essays on this Topic yet.</p> : essays.map((essay) => <EssayItem essay={essay} />)}
+  </section>
+</Layout>
