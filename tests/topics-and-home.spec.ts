@@ -18,7 +18,7 @@ test.describe('Topic pages', () => {
     );
 
     // Essays list: newest first (Newer Essay Nov 8, 2026 before Tracer Essay Nov 4, 2026)
-    const essayHeadings = page.locator('article h3 a');
+    const essayHeadings = page.locator('section[aria-labelledby="essays"] article h3 a');
     await expect(essayHeadings).toHaveCount(2);
     await expect(essayHeadings.nth(0)).toHaveText('Newer Essay');
     await expect(essayHeadings.nth(1)).toHaveText('Tracer Essay');

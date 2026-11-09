@@ -26,3 +26,146 @@
     @apply bg-accent-soft;
   }
 }
+
+/* ------------------------------------------------------------------------
+ * Slides
+ * A Slide is a fixed 1280×720 canvas, scaled by the Deck player or CSS.
+ * Typography is set in canvas pixels: body text never goes below 32px so
+ * it stays readable when scaled down.
+ * --------------------------------------------------------------------- */
+
+.deck-body {
+  --deck-scale: min(1, calc((100vw - 48px) / 1280));
+  min-height: 100dvh;
+}
+
+.slide-frame {
+  position: relative;
+  width: calc(1280px * var(--deck-scale, 1));
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: calc(16px * var(--deck-scale, 1));
+  background: var(--color-slide);
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.55);
+  flex-shrink: 0;
+}
+
+.slide-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1280px;
+  height: 720px;
+  transform: scale(var(--deck-scale, 1));
+  transform-origin: top left;
+  padding: 80px 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  font-size: 36px;
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+
+.slide-canvas h1 {
+  font-family: var(--font-display);
+  font-size: 96px;
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.slide-canvas h2 {
+  font-family: var(--font-display);
+  font-size: 64px;
+  line-height: 1.08;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+.slide-canvas h3 {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.slide-canvas p {
+  max-width: 30ch;
+}
+.slide-canvas ul,
+.slide-canvas ol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-left: 1.1em;
+}
+.slide-canvas ul {
+  list-style: none;
+  padding-left: 0;
+}
+.slide-canvas ul > li {
+  position: relative;
+  padding-left: 1.1em;
+}
+.slide-canvas ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.38em;
+  height: 0.38em;
+  border-radius: 999px;
+  background: var(--color-accent);
+}
+.slide-canvas ol {
+  list-style: decimal;
+}
+.slide-canvas strong {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.slide-canvas code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+.slide-canvas pre {
+  font-size: 28px;
+  padding: 28px 32px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Layout: title, the opening Slide of a Deck. */
+.slide-canvas[data-layout="title"] {
+  background:
+    radial-gradient(circle at 85% 15%, oklch(0.6 0.2 268 / 0.35), transparent 45%),
+    radial-gradient(circle at 10% 90%, oklch(0.7 0.15 200 / 0.25), transparent 40%),
+    var(--color-stage);
+  color: var(--color-slide);
+  justify-content: flex-end;
+}
+.slide-canvas[data-layout="title"] p {
+  color: oklch(0.82 0.02 265);
+  max-width: 34ch;
+}
+
+/* Layout: section, a divider between chapters of a Deck. */
+.slide-canvas[data-layout="section"] {
+  background: var(--color-accent);
+  color: white;
+}
+.slide-canvas[data-layout="section"] strong {
+  color: white;
+}
+
+/* Layout: statement, one big idea, centered. */
+.slide-canvas[data-layout="statement"] {
+  align-items: center;
+  text-align: center;
+}
+.slide-canvas[data-layout="statement"] p {
+  font-family: var(--font-display);
+  font-size: 64px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  max-width: 22ch;
+}

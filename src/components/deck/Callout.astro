@@ -1,0 +1,16 @@
+---
+/** A highlighted aside inside a Slide. */
+interface Props {
+  tone?: 'accent' | 'neutral';
+}
+const { tone = 'accent' } = Astro.props;
+---
+
+<div
+  class:list={[
+    'rounded-[20px] border-l-[10px] px-10 py-7 font-semibold [&>p]:max-w-none',
+    tone === 'accent' ? 'border-accent bg-accent-soft text-ink' : 'border-muted bg-line/60 text-ink',
+  ]}
+>
+  <slot />
+</div>

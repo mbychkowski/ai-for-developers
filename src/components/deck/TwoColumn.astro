@@ -1,0 +1,8 @@
+---
+/** Two side-by-side columns inside a Slide. Use the `left` and `right` slots. */
+---
+
+<div class="grid grid-cols-2 items-start gap-16">
+  <div class="flex flex-col gap-6"><slot name="left" /></div>
+  <div class="flex flex-col gap-6"><slot name="right" /></div>
+</div>
