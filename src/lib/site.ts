@@ -45,7 +45,7 @@ export async function getTopics(): Promise<CollectionEntry<'topics'>[]> {
       }
     }
     const orderMap = new Map(order.map((id, index) => [id, index]));
-    return topics.sort((a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0));
+    return topics.sort((a, b) => (orderMap.get(a.id) ?? Infinity) - (orderMap.get(b.id) ?? Infinity));
   } catch {
     return topics;
   }
