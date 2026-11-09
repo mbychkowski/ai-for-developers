@@ -1,0 +1,6 @@
+testing:
+  name: Testing
+  description: High-confidence testing strategies for modern applications.
+agentic-engineering:
+  name: Agentic Engineering
+  description: Principles and patterns for building software with autonomous AI agents.
