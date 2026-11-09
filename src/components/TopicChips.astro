@@ -1,0 +1,29 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { topicUrl } from '../lib/site';
+
+/** Topic links for an Essay. Pass resolved Topic entries. */
+interface Props {
+  topics: CollectionEntry<'topics'>[];
+  size?: 'sm' | 'md';
+}
+const { topics, size = 'sm' } = Astro.props;
+---
+
+<ul class="flex flex-wrap gap-2">
+  {
+    topics.map((t) => (
+      <li>
+        <a
+          href={topicUrl(t.id)}
+          class:list={[
+            'inline-block rounded-full border border-line bg-white/60 font-medium text-muted transition hover:border-accent hover:text-accent',
+            size === 'sm' ? 'px-2.5 py-0.5 text-xs' : 'px-3.5 py-1 text-sm',
+          ]}
+        >
+          {t.data.name}
+        </a>
+      </li>
+    ))
+  }
+</ul>

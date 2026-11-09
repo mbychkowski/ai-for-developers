@@ -25,3 +25,8 @@ pnpm-debug.log*
 
 # graphify knowledge graph (rebuilt locally by git hooks; never committed)
 graphify-out/
+
+# test artifacts
+test-results/
+playwright-report/
+
