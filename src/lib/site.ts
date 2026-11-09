@@ -16,9 +16,12 @@ export function url(path = '/'): string {
 export const essayUrl = (id: string) => url(`/essays/${id}/`);
 export const topicUrl = (id: string) => url(`/topics/${id}/`);
 
+/** Drafts are visible in `astro dev` and excluded from production builds. */
+const isVisible = ({ data }: { data: { draft?: boolean } }) => import.meta.env.DEV || !data.draft;
+
 /** Essays, newest first. */
 export async function getEssays(): Promise<CollectionEntry<'essays'>[]> {
-  const essays = await getCollection('essays');
+  const essays = await getCollection('essays', isVisible);
   return essays.sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
 }
 
