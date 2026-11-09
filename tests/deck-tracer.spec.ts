@@ -25,10 +25,9 @@ test.describe('Deck tracer page', () => {
     await expect(slide1.getByRole('heading', { name: 'Tracer Deck Title' })).toBeVisible();
     await expect(slide1.getByText('A tracer subtitle.')).toBeVisible();
 
-    // Slide 2 has default layout and its contents
+    // Slide 2 is present in DOM as static HTML, but hidden before hydration / without JS
     const slide2 = slides.nth(1);
-    await expect(slide2.getByRole('heading', { name: 'Second Slide' })).toBeVisible();
-    await expect(slide2.getByText('Content on the second slide.')).toBeVisible();
+    await expect(slide2).toBeHidden();
 
     // Check canvas aspect ratio / fixed 1280x720 canvas
     const canvas = slide1.locator('.slide-canvas');

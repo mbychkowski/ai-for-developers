@@ -1,6 +1,7 @@
 ---
 import '../../styles/global.css';
 import { getEntries, render } from 'astro:content';
+import DeckPlayer from '../../components/deck/DeckPlayer.tsx';
 import Slide from '../../components/deck/Slide.astro';
 import Callout from '../../components/deck/Callout.astro';
 import TwoColumn from '../../components/deck/TwoColumn.astro';
@@ -36,7 +37,7 @@ const components = { Slide, Callout, TwoColumn };
     <header class="flex items-center gap-4 px-4 pt-4 text-sm sm:px-8 sm:pt-5">
       <a href={url('/')} class="text-white/60 transition hover:text-white" aria-label="Back to home">←</a>
       <h1 class="truncate font-semibold">{deck.data.title}</h1>
-      <div class="ml-auto flex items-center gap-3 text-white/50">
+      <div class="ml-auto hidden items-center gap-3 text-white/50 md:flex">
         {
           topics.map((t) => (
             <a href={topicUrl(t.id)} class="transition hover:text-white">
@@ -49,8 +50,10 @@ const components = { Slide, Callout, TwoColumn };
       </div>
     </header>
 
-    <main class="flex min-h-0 flex-1 flex-col items-center gap-8 overflow-y-auto p-4 sm:p-8">
-      <Content components={components} />
+    <main class="flex min-h-0 flex-1 flex-col">
+      <DeckPlayer client:load title={deck.data.title}>
+        <Content components={components} />
+      </DeckPlayer>
     </main>
   </body>
 </html>
