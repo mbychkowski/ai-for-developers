@@ -29,25 +29,19 @@
 
 /* ------------------------------------------------------------------------
  * Slides
- * A Slide is a fixed 1280×720 canvas, scaled by the Deck player or CSS.
- * Typography is set in canvas pixels: body text never goes below 32px so
- * it stays readable when scaled down.
+ * A Slide is a fixed 1280×720 canvas, scaled by the Deck player via
+ * --deck-scale. Typography is set in canvas pixels: body text never goes
+ * below 32px so it stays readable when scaled down.
  * --------------------------------------------------------------------- */
-
-.deck-body {
-  --deck-scale: min(1, calc((100vw - 48px) / 1280));
-  min-height: 100dvh;
-}
 
 .slide-frame {
   position: relative;
-  width: calc(1280px * var(--deck-scale, 1));
+  width: calc(1280px * var(--deck-scale, 0.5));
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: calc(16px * var(--deck-scale, 1));
+  border-radius: calc(16px * var(--deck-scale, 0.5));
   background: var(--color-slide);
   box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.55);
-  flex-shrink: 0;
 }
 
 .slide-canvas {
@@ -56,7 +50,7 @@
   left: 0;
   width: 1280px;
   height: 720px;
-  transform: scale(var(--deck-scale, 1));
+  transform: scale(var(--deck-scale, 0.5));
   transform-origin: top left;
   padding: 80px 96px;
   display: flex;
@@ -169,3 +163,22 @@
   letter-spacing: -0.03em;
   max-width: 22ch;
 }
+
+/* Before the Deck player hydrates, show only the first Slide. */
+.deck-root:not(.is-ready) .slide-frame:not(:first-of-type) {
+  display: none;
+}
+
+/* Deck pages fill the viewport; portrait phones scroll a vertical stack instead. */
+.deck-body {
+  height: 100dvh;
+  overflow: hidden;
+}
+@media (orientation: portrait) and (max-width: 820px) {
+  .deck-body {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+}
+
