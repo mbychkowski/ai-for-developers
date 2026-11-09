@@ -1,12 +1,39 @@
 ---
+import { getEntries } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
-import EssayItem from '../../components/EssayItem.astro';
-import { getEssays } from '../../lib/site';
+import TopicFilter, { type FilterEssay, type FilterTopic } from '../../components/TopicFilter';
+import { essayUrl, formatDate, getEssays, getTopics, topicUrl } from '../../lib/site';
 
-const essays = await getEssays();
+const rawEssays = await getEssays();
+const rawTopics = await getTopics();
+
+const essays: FilterEssay[] = await Promise.all(
+  rawEssays.map(async (e) => {
+    const resolvedTopics = await getEntries(e.data.topics);
+    return {
+      id: e.id,
+      href: essayUrl(e.id),
+      title: e.data.title,
+      description: e.data.description,
+      date: e.data.published.toISOString(),
+      dateLabel: formatDate(e.data.published),
+      draft: e.data.draft,
+      topics: resolvedTopics.map((t) => ({
+        id: t.id,
+        name: t.data.name,
+        href: topicUrl(t.id),
+      })),
+    };
+  })
+);
+
+const topics: FilterTopic[] = rawTopics.map((t) => ({
+  id: t.id,
+  name: t.data.name,
+}));
 ---
 
-<Layout title="Essays" description="All Essays, newest first.">
+<Layout title="Essays" description="All Essays, newest first, filterable by Topic.">
   <h1 class="mb-8 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Essays</h1>
-  {essays.length === 0 ? <p class="text-muted">No Essays yet.</p> : essays.map((essay) => <EssayItem essay={essay} />)}
+  <TopicFilter client:load essays={essays} topics={topics} />
 </Layout>
