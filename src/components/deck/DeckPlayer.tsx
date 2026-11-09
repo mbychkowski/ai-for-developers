@@ -35,6 +35,24 @@ function indexFromHash(count: number): number {
   return Number.isFinite(n) ? clampIndex(n - 1, count) : 0;
 }
 
+/** Computes which Slide is currently closest to the center of the viewport in stacked mode. */
+function findActiveSlideIndex(slides: HTMLElement[]): number {
+  if (typeof window === 'undefined' || slides.length === 0) return 0;
+  const viewportCenter = window.innerHeight / 2;
+  let closestDist = Infinity;
+  let closestIndex = 0;
+  slides.forEach((slide, i) => {
+    const rect = slide.getBoundingClientRect();
+    const slideCenter = rect.top + rect.height / 2;
+    const dist = Math.abs(slideCenter - viewportCenter);
+    if (dist < closestDist) {
+      closestDist = dist;
+      closestIndex = i;
+    }
+  });
+  return closestIndex;
+}
+
 /**
  * The Deck player island. It drives the statically rendered Slides via the DOM,
  * so Slides stay plain HTML (and can contain their own islands).
@@ -60,10 +78,21 @@ export default function DeckPlayer({ title, children }: Props) {
   }, []);
 
   // Track which mode we're in.
+  const stackedRef = useRef(stacked);
+  stackedRef.current = stacked;
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const mq = window.matchMedia(STACKED_QUERY);
-    const update = () => setStacked(mq.matches);
+    const update = () => {
+      const nextStacked = mq.matches;
+      if (!nextStacked && stackedRef.current && slidesRef.current.length > 0) {
+        const active = findActiveSlideIndex(slidesRef.current);
+        setIndex(active);
+        history.replaceState(null, '', `#${active + 1}`);
+      }
+      setStacked(nextStacked);
+    };
     update();
     mq.addEventListener('change', update);
     return () => mq.removeEventListener('change', update);
@@ -113,10 +142,69 @@ export default function DeckPlayer({ title, children }: Props) {
     return () => window.removeEventListener('hashchange', onHash);
   }, [count]);
 
-  // When switching to stacked mode, scroll the current Slide into view.
+  const indexRef = useRef(index);
+  indexRef.current = index;
+  const isProgrammaticScrollRef = useRef(false);
+
+  // When switching between modes:
+  // - Entering stacked mode: scroll the current Slide into view.
+  // - Exiting stacked mode: reset window scroll so desktop stage isn't offset.
   useEffect(() => {
-    if (stacked) slidesRef.current[index]?.scrollIntoView({ block: 'start' });
-  }, [stacked, index]);
+    if (stacked) {
+      let cancelled = false;
+      isProgrammaticScrollRef.current = true;
+      requestAnimationFrame(() => {
+        if (!cancelled) {
+          slidesRef.current[indexRef.current]?.scrollIntoView({ block: 'start' });
+        }
+        requestAnimationFrame(() => {
+          isProgrammaticScrollRef.current = false;
+        });
+      });
+      return () => {
+        cancelled = true;
+        isProgrammaticScrollRef.current = false;
+      };
+    } else {
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0);
+      }
+    }
+  }, [stacked]);
+
+  // When in stacked mode, track the visible Slide as the reader scrolls.
+  useEffect(() => {
+    if (!stacked || typeof window === 'undefined') return;
+    const slides = slidesRef.current;
+    if (slides.length === 0) return;
+
+    let ticking = false;
+
+    const onScroll = () => {
+      if (isProgrammaticScrollRef.current) return;
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          if (!isProgrammaticScrollRef.current) {
+            const closestIndex = findActiveSlideIndex(slides);
+            setIndex((prev) => {
+              if (prev !== closestIndex) {
+                history.replaceState(null, '', `#${closestIndex + 1}`);
+                return closestIndex;
+              }
+              return prev;
+            });
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [stacked]);
 
   // Keyboard navigation (stage mode only; stacked mode scrolls natively).
   useEffect(() => {
