@@ -32,15 +32,41 @@ pnpm exec playwright install chromium
 ```
 src/content/
 ├── topics.yaml            # curated Topic list
+├── decks/<deck>/index.mdx # MDX Decks
 └── essays/<essay>.md      # Markdown essays
 ```
 
-- **Topic**: defined in `src/content/topics.yaml` with `name` and `description`.
-- **Essay**: markdown file in `src/content/essays/<essay>.md` with frontmatter:
-  - `title`: string
-  - `description`: string
-  - `published`: YYYY-MM-DD
-  - `topics`: list of topic IDs (validated against `topics.yaml`)
+- **Topic**: defined in `src/content/topics.yaml` as a curated dictionary keyed by topic ID:
+  - `name`: string (display name, e.g. `Agentic Engineering`)
+  - `description`: string (concise explanation of the topic scope)
+  - Every Deck and Essay must reference at least one valid Topic ID from this list.
+- **Essay**: dated prose piece in `src/content/essays/<essay>.md` (or `.mdx`) read as a single scrolling page:
+  - Frontmatter:
+    - `title`: string
+    - `description`: string
+    - `published`: YYYY-MM-DD (Essays are dated and published once)
+    - `topics`: list of topic IDs (validated against `topics.yaml`)
+    - `draft`: boolean (optional, default `false`)
+  - Content: written in standard Markdown/MDX with headings, paragraphs, lists, callouts, and code blocks.
+- **Deck**: MDX document in `src/content/decks/<deck>/index.mdx` telling a narrative as a sequence of Slides:
+  - Frontmatter:
+    - `title`: string
+    - `description`: string
+    - `updated`: YYYY-MM-DD (Decks are evergreen, revised in place)
+    - `topics`: list of topic IDs (validated against `topics.yaml`)
+    - `draft`: boolean (optional, default `false`)
+  - **Slide**: each screen is wrapped in `<Slide>` (fixed 1280×720 canvas, scaled to fit the stage). Body typography defaults to 36px (keep body text at least ~32px) so it remains legible when scaled.
+    - Layouts (`layout` prop on `<Slide>`):
+      - `default` (or omitted): standard Slide layout with light canvas and dark ink text.
+      - `title`: opening Slide of a Deck with dark stage background, radial gradient accents, and display typography.
+      - `section`: divider Slide between chapters with accent background and white text.
+      - `statement`: centered big idea with large display typography (64px).
+  - **Deck Components** (available in MDX without imports):
+    - `<Callout tone="accent|neutral">`: highlighted aside with 10px left border. `accent` tone (default) uses the accent color; `neutral` tone uses muted borders.
+    - `<TwoColumn>`: side-by-side two-column layout using named slots `<Fragment slot="left">` and `<Fragment slot="right">`.
+  - **Slide Deep Links (`#n`)**:
+    - Every Slide is addressable via a 1-based index hash fragment, e.g. `/decks/<deck>/#3` links directly to the third Slide.
+    - Deep links update the URL hash in the browser address bar during navigation, and opening or sharing a URL with `#n` loads directly to that Slide.
 
 ## CI & Deployment
 
