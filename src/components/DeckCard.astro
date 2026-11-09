@@ -1,0 +1,32 @@
+---
+import { getEntries, type CollectionEntry } from 'astro:content';
+import TopicChips from './TopicChips.astro';
+import { deckUrl, formatDate } from '../lib/site';
+
+interface Props {
+  deck: CollectionEntry<'decks'>;
+}
+const { deck } = Astro.props;
+const topics = await getEntries(deck.data.topics);
+---
+
+<article
+  class="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+>
+  <div
+    class="relative flex aspect-video items-end bg-stage p-6"
+    style="background-image: radial-gradient(circle at 85% 15%, oklch(0.6 0.2 268 / 0.4), transparent 50%), radial-gradient(circle at 10% 90%, oklch(0.7 0.15 200 / 0.25), transparent 45%);"
+  >
+    <h3 class="font-display text-2xl leading-tight font-extrabold tracking-tight text-white">
+      <a href={deckUrl(deck.id)} class="after:absolute after:inset-0">{deck.data.title}</a>
+    </h3>
+    {deck.data.draft && <span class="absolute top-4 right-4 rounded bg-amber-300 px-2 py-0.5 text-xs font-bold text-ink">Draft</span>}
+  </div>
+  <div class="flex flex-1 flex-col gap-3 p-6">
+    <p class="text-muted">{deck.data.description}</p>
+    <div class="relative z-10 mt-auto flex flex-wrap items-center justify-between gap-3">
+      <TopicChips topics={topics} />
+      <span class="text-xs text-muted">Updated {formatDate(deck.data.updated)}</span>
+    </div>
+  </div>
+</article>

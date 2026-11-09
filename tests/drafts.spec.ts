@@ -28,7 +28,8 @@ test.describe('Drafts in development server', () => {
 
     // Draft appears on the dev home page listing marked as Draft
     await page.goto(devBaseUrl);
-    await expect(page.getByRole('link', { name: 'Draft Essay' })).toBeVisible();
-    await expect(page.getByText('Draft', { exact: true })).toBeVisible();
+    const draftItem = page.locator('article', { hasText: 'Draft Essay' });
+    await expect(draftItem.getByRole('link', { name: 'Draft Essay' })).toBeVisible();
+    await expect(draftItem.getByText('Draft', { exact: true })).toBeVisible();
   });
 });

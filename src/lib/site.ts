@@ -15,10 +15,17 @@ export function url(path = '/'): string {
 }
 
 export const essayUrl = (id: string) => url(`/essays/${id}/`);
+export const deckUrl = (id: string) => url(`/decks/${id}/`);
 export const topicUrl = (id: string) => url(`/topics/${id}/`);
 
 /** Drafts are visible in `astro dev` and excluded from production builds. */
 const isVisible = ({ data }: { data: { draft?: boolean } }) => import.meta.env.DEV || !data.draft;
+
+/** Decks, most recently updated first. */
+export async function getDecks(): Promise<CollectionEntry<'decks'>[]> {
+  const decks = await getCollection('decks', isVisible);
+  return decks.sort((a, b) => b.data.updated.valueOf() - a.data.updated.valueOf());
+}
 
 /** Essays, newest first. */
 export async function getEssays(): Promise<CollectionEntry<'essays'>[]> {

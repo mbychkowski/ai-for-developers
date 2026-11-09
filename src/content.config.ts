@@ -16,6 +16,23 @@ const topics = defineCollection({
 /** One or more Topics; an unknown Topic id fails the build. */
 const topicRefs = z.array(reference('topics')).min(1);
 
+/** Decks: one folder per Deck, `decks/<deck>/index.mdx`. The folder name is the id. */
+const decks = defineCollection({
+  loader: glob({
+    pattern: '*/index.mdx',
+    base: `./${contentDir}/decks`,
+    generateId: ({ entry }) => entry.replace(/\/index\.mdx$/, ''),
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    /** Decks are evergreen: revised in place, so they carry a last-updated date. */
+    updated: z.coerce.date(),
+    topics: topicRefs,
+    draft: z.boolean().default(false),
+  }),
+});
+
 /** Essays: one file each, `essays/<essay>.md`. The filename is the id. */
 const essays = defineCollection({
   loader: glob({ pattern: '*.{md,mdx}', base: `./${contentDir}/essays` }),
@@ -29,4 +46,4 @@ const essays = defineCollection({
   }),
 });
 
-export const collections = { topics, essays };
+export const collections = { topics, decks, essays };

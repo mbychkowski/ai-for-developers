@@ -1,7 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import DeckCard from '../../components/DeckCard.astro';
 import EssayItem from '../../components/EssayItem.astro';
-import { getEssays, getTopics } from '../../lib/site';
+import { getDecks, getEssays, getTopics } from '../../lib/site';
 
 export async function getStaticPaths() {
   const topics = await getTopics();
@@ -10,6 +11,7 @@ export async function getStaticPaths() {
 
 const { topic } = Astro.props;
 const hasTopic = (refs: { id: string }[]) => refs.some((r) => r.id === topic.id);
+const decks = (await getDecks()).filter((d) => hasTopic(d.data.topics));
 const essays = (await getEssays()).filter((e) => hasTopic(e.data.topics));
 ---
 
@@ -19,6 +21,19 @@ const essays = (await getEssays()).filter((e) => hasTopic(e.data.topics));
     <h1 class="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">{topic.data.name}</h1>
     <p class="mt-4 text-xl text-muted">{topic.data.description}</p>
   </header>
+
+  {
+    decks.length > 0 && (
+      <section class="mb-16" aria-labelledby="decks">
+        <h2 id="decks" class="mb-6 text-sm font-semibold tracking-widest text-muted uppercase">Decks</h2>
+        <div class="grid gap-6 sm:grid-cols-2">
+          {decks.map((deck) => (
+            <DeckCard deck={deck} />
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   <section aria-labelledby="essays">
     <h2 id="essays" class="mb-2 text-sm font-semibold tracking-widest text-muted uppercase">Essays</h2>
