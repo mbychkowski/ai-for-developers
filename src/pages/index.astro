@@ -1,29 +1,42 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import DraftBadge from '../components/DraftBadge.astro';
-import { getEssays, essayUrl } from '../lib/site';
+import EssayItem from '../components/EssayItem.astro';
+import { SITE_DESCRIPTION, SITE_TITLE, getEssays, getTopics, topicUrl, url } from '../lib/site';
 
-const essays = await getEssays();
+const essays = (await getEssays()).slice(0, 5);
+const topics = await getTopics();
 ---
 
 <Layout>
-  <section class="flex flex-col gap-6">
-    <h1 class="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">AI for Developers</h1>
-    <p class="text-xl text-muted">Essays on building software with autonomous AI agents.</p>
-    <div class="mt-8 flex flex-col gap-4">
-      <h2 class="font-display text-2xl font-bold">Essays</h2>
-      <ul class="flex flex-col gap-2">
-        {
-          essays.map((essay) => (
-            <li>
-              <a href={essayUrl(essay.id)} class="text-lg font-medium text-ink hover:text-accent">
-                {essay.data.title}
-              </a>
-              {essay.data.draft && <DraftBadge />}
-            </li>
-          ))
-        }
-      </ul>
+  <section class="mb-16 max-w-3xl">
+    <h1 class="font-display text-5xl leading-[1.05] font-extrabold tracking-tight sm:text-6xl">{SITE_TITLE}</h1>
+    <p class="mt-5 text-xl text-muted">{SITE_DESCRIPTION}</p>
+  </section>
+
+  <section class="mb-20" aria-labelledby="essays">
+    <div class="mb-2 flex items-baseline justify-between">
+      <h2 id="essays" class="text-sm font-semibold tracking-widest text-muted uppercase">Recent Essays</h2>
+      <a href={url('/essays/')} class="text-sm font-medium text-accent hover:underline">All Essays →</a>
     </div>
+    {essays.length === 0 ? <p class="text-muted">No Essays yet.</p> : essays.map((essay) => <EssayItem essay={essay} />)}
+  </section>
+
+  <section aria-labelledby="topics">
+    <h2 id="topics" class="mb-6 text-sm font-semibold tracking-widest text-muted uppercase">Topics</h2>
+    <ul class="grid gap-4 sm:grid-cols-3">
+      {
+        topics.map((t) => (
+          <li>
+            <a
+              href={topicUrl(t.id)}
+              class="block h-full rounded-xl border border-line bg-white/60 p-5 transition hover:border-accent"
+            >
+              <span class="font-display font-bold">{t.data.name}</span>
+              <span class="mt-1 block text-sm text-muted">{t.data.description}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </section>
 </Layout>
