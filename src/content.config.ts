@@ -25,6 +25,7 @@ const essays = defineCollection({
     /** Essays are dated: published once. */
     published: z.coerce.date(),
     topics: topicRefs,
+    draft: z.boolean().default(false),
   }),
 });
 

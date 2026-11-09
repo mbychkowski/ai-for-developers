@@ -2,6 +2,7 @@
 import { getEntries, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import TopicChips from '../../components/TopicChips.astro';
+import DraftBadge from '../../components/DraftBadge.astro';
 import { formatDate, getEssays } from '../../lib/site';
 
 export async function getStaticPaths() {
@@ -19,6 +20,7 @@ const topics = await getEntries(essay.data.topics);
     <header class="mb-10 flex flex-col gap-4">
       <time datetime={essay.data.published.toISOString()} class="text-sm text-muted">
         {formatDate(essay.data.published)}
+        {essay.data.draft && <DraftBadge />}
       </time>
       <h1 class="font-display text-4xl leading-tight font-extrabold tracking-tight sm:text-5xl">{essay.data.title}</h1>
       <p class="text-xl text-muted">{essay.data.description}</p>

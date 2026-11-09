@@ -22,11 +22,20 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'CONTENT_DIR=tests/fixtures/content pnpm build && pnpm preview --port 4321 --ignore-lock',
-    url: 'http://localhost:4321/ai-for-developers/',
-    reuseExistingServer: false,
-    stdout: 'pipe',
-    stderr: 'pipe',
-  },
+  webServer: [
+    {
+      command: 'CONTENT_DIR=tests/fixtures/content pnpm build && pnpm preview --port 4321 --ignore-lock',
+      url: 'http://localhost:4321/ai-for-developers/',
+      reuseExistingServer: false,
+      stdout: 'pipe',
+      stderr: 'pipe',
+    },
+    {
+      command: 'CONTENT_DIR=tests/fixtures/content pnpm astro dev --port 4322 --ignore-lock',
+      url: 'http://localhost:4322/ai-for-developers/',
+      reuseExistingServer: false,
+      stdout: 'pipe',
+      stderr: 'pipe',
+    },
+  ],
 });
